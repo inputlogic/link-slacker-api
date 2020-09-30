@@ -94,7 +94,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'links',
             'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'PASSWORD': '',
             'HOST': 'localhost',
             'PORT': ''
         },
