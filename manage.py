@@ -6,7 +6,7 @@ import dotenv
 
 
 def main():
-    dotenv.load_dotenv(dotenv_path=".env")
+    dotenv.read_dotenv(".env")
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'links.settings')
     try:
