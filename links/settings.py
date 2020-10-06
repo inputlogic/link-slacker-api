@@ -31,9 +31,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = [get("ALLOWED_HOSTS")]
 
 # Application definition
@@ -87,7 +84,9 @@ if ENV in [STAGING, PRODUCTION]:
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=500),
     }
+    DEBUG = False
 else:
+    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
