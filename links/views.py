@@ -20,7 +20,9 @@ from rest_framework.views import APIView
 class StartEventAPIView(APIView):
     def post(self, request, *args, **kwargs):
         slack_message = request.data
+        print('slack message: ' + slack_message)
         channel = slack_message.get("text")  # channel from '/start' command text
+        print('channel: ' + channel)
 
         check_res = check_channel_sign(channel=channel)
         if check_res is None:
