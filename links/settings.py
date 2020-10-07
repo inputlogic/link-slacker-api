@@ -23,6 +23,11 @@ PRODUCTION = 'production'
 ENV = os.getenv('DJANGO_ENV', DEV)
 DEBUG = False if ENV == PRODUCTION else True
 
+# Heroku settings
+cwd = os.getcwd()
+if cwd == '/app' or cwd[:4] == '/tmp':
+    import dj_database_url
+    
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('/app', '')
 
@@ -157,3 +162,7 @@ CLIENT_ID = get("CLIENT_ID")
 CLIENT_SECRET = get("CLIENT_SECRET")
 VERIFICATION_TOKEN = get("VERIFICATION_TOKEN")
 BOT_CHANNEL = get("BOT_CHANNEL")
+
+# Configure Django App for Heroku
+import django_heroku
+django_heroku.settings(locals())

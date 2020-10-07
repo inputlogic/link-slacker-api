@@ -10,18 +10,13 @@ from .views import (
     URLListAPIView,
 )
 
-admin.autodiscover()
-
 urlpatterns = [
-    # Admin
     url(r'^admin/', admin.site.urls),
     url(r'^events/messages/', MessagesEventAPIView.as_view()),
     url(r'^events/start/', StartEventAPIView.as_view()),
     url(r'^events/stop/', StopEventAPIView.as_view()),
     url(r'^events/', URLListAPIView.as_view()),
 ]
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.ENV == settings.DEV:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
