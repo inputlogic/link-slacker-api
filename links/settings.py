@@ -20,7 +20,8 @@ def get(variable):
 DEV = 'dev'
 STAGING = 'staging'
 PRODUCTION = 'production'
-ENV = get('DJANGO_ENV')
+ENV = os.getenv('DJANGO_ENV', DEV)
+DEBUG = False if ENV == PRODUCTION else True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('/app', '')
@@ -103,9 +104,7 @@ if ENV in [STAGING, PRODUCTION]:
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=500),
     }
-    DEBUG = False
 else:
-    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
