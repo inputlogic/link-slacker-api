@@ -21,9 +21,11 @@ class StartEventAPIView(APIView):
     def post(self, request, *args, **kwargs):
         slack_message = request.data
         channel = slack_message.get("text")  # channel from '/start' command text
+        print("Slack message received: ", slack_message)
 
         check_res = check_channel_sign(channel=channel)
         if check_res is None:
+            print("check_res is None, starting listen...")
             bot_resp_text = start_channel_listen(channel)
         else:
             Channel.objects.filter(channel_id=channel).update(

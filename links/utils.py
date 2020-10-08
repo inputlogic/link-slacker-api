@@ -88,6 +88,7 @@ def start_channel_listen(channel):
 
 
 def check_channel_sign(channel):
+    print("Checking channel: ", channel)
     channel = Channel.objects.filter(channel_id=channel).first()
     if channel is None:
         return None
