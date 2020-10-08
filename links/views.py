@@ -1,3 +1,5 @@
+from pprint import pprint 
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
@@ -21,7 +23,7 @@ class StartEventAPIView(APIView):
     def post(self, request, *args, **kwargs):
         slack_message = request.data
         channel = slack_message.get("text")  # channel from '/start' command text
-        print("Slack message received: ", slack_message)
+        pprint("Slack message received: ", slack_message)
 
         check_res = check_channel_sign(channel=channel)
         if check_res is None:
