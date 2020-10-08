@@ -92,7 +92,10 @@ def check_channel_sign(channel):
     channel = Channel.objects.filter(channel_id=channel).first()
     print("After object filter: ", channel)
     if channel is None:
+        print("No channel object found in db.")
         return None
+    
+    print("Channel found, returning: ", channel.listen)
     return channel.listen
 
 

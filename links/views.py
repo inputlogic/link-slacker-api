@@ -19,11 +19,18 @@ from rest_framework.views import APIView
 
 class StartEventAPIView(APIView):
     def post(self, request, *args, **kwargs):
+        
+        # get slack message data
         slack_message = request.data
-        channel = slack_message.get("text")  # channel from '/start' command text
         print("Slack message received: ", slack_message)
-
-        check_res = check_channel_sign(channel=channel)
+        
+        # check for channel id
+        channel_id = slack_message.get("channel_id")  # channel from '/start' command text        
+        if not channel_id:
+            bot_resp_text = "Hmm, I couldn't find a channel to listen to."
+            return Response(data=bot_resp_text, status=status.HTTP_400_BAD_REQUEST)
+        
+        check_res = check_channel_sign(channel=channel_id)
         if check_res is None:
             print("check_res is None, starting listen...")
             bot_resp_text = start_channel_listen(channel)
