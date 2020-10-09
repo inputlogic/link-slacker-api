@@ -1,3 +1,5 @@
+import threading
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
@@ -12,11 +14,12 @@ from .utils import (
     start_channel_listen,
     check_channel_sign,
     write_link_db,
+    is_valid_channel
 )
 
 from rest_framework.views import APIView
 
-
+'''
 class StartEventAPIView(APIView):
     def post(self, request, *args, **kwargs):
         
@@ -24,21 +27,55 @@ class StartEventAPIView(APIView):
         slack_message = request.data
         print("Slack message received: ", slack_message)
         
-        # check for channel id
-        channel_id = slack_message.get("channel_id")  # channel from '/start' command text        
-        if not channel_id:
-            bot_resp_text = "Hmm, I couldn't find a channel to listen to."
-            return Response(data=bot_resp_text, status=status.HTTP_400_BAD_REQUEST)
+        # collect channel details from slack
+        channel_id = slack_message.get("channel_id")
+        channel_name = slack_message.get("channel_name")
+        channel_text = slack_message.get("text")
         
-        check_res = check_channel_sign(channel=channel_id)
+        # fail if not all channel data is available
+        if None in (channel_id, channel_name, channel_text):
+            bot_resp_text = "Hmm, I couldn't find a channel to listen to. :thinking_face:"
+            return Response(data=bot_resp_text, status=status.HTTP_200_OK)
+        
+        # fail if slack says channel isn't valid
+        if not is_channel_valid(channel_text):
+            bot_resp_text = "Strange, that channel doesn't seem to be valid. :thinking_face:"
+            return Response(data=bot_resp_text, status=status.HTTP_200_OK)            
+
+        # if channel isn't listening yet, make it listen
+        if not is_channel_listening(channel=channel_id):
+            print("Didn't find channel, or channel isn't listening yet. Setting listen = True on channel: ", channel_text)
+            bot_resp_text = start_channel_listen(channel_text)
+        else:
+            Channel.objects.filter(channel_id=channel_id).update(
+                channel_name=channe_name,
+                channel_id=channel_id,
+                channel_text=channel_text,
+                listen=True
+            )
+            bot_resp_text = "Great idea! Listening for links on " + str(channel_text) + "."
+
+        return Response(data=bot_resp_text, status=status.HTTP_200_OK)
+'''
+
+class StartEventAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        slack_message = request.data
+        channel = slack_message.get("text")  # channel from '/start' command text
+
+        check_res = check_channel_sign(channel=channel)
         if check_res is None:
-            print("check_res is None, starting listen...")
-            bot_resp_text = start_channel_listen(channel)
+            if is_valid_channel(channel):
+                bot_resp_text = f"Listening for links on {channel}. :robot_face:"
+                listen_starter_thread = threading.Thread(target=start_channel_listen, kwargs=dict(channel=channel))
+                listen_starter_thread.start()
+            else:
+                bot_resp_text = f"Strange, {channel} doesn't seem to be valid. :thinking_face:"
         else:
             Channel.objects.filter(channel_id=channel).update(
                 channel_id=channel, listen=True
             )
-            bot_resp_text = "Listening restored!"
+            bot_resp_text = f"Great idea! Listening for links on {channel}."
 
         return Response(data=bot_resp_text, status=status.HTTP_200_OK)
 
